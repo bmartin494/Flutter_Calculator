@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: Calculator(title: 'Flutter Calculator'),
+      home: const Calculator(title: 'Flutter Calculator'),
     );
   }
 }
@@ -30,8 +30,8 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
-
-  Widget calcButton(String buttonText, Color buttonColor, Color textColor) {
+  //need to make the buttonColor Color declaration nullable (?) otherwise you cannot use the color shading e.g. [700]
+  Widget calcButton(String buttonText, Color? buttonColor, Color textColor) {
     return Container(
       child: ElevatedButton(
         onPressed: () {
@@ -47,7 +47,8 @@ class _CalculatorState extends State<Calculator> {
         style: ElevatedButton.styleFrom(
           shape : const CircleBorder(),
           primary: buttonColor,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(0),
+          minimumSize: const Size(80, 80),
         ),
       ),
     );
@@ -73,11 +74,11 @@ class _CalculatorState extends State<Calculator> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: const [
                   Padding(padding: EdgeInsets.all(10.0),
-                  child: Text('0',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(color: Colors.white, fontSize: 100),
-                    ),
-                  )
+                    child: Text('0',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(color: Colors.white, fontSize: 100),
+                      ),
+                    )
                 ],
               ),
               Row(
@@ -87,41 +88,69 @@ class _CalculatorState extends State<Calculator> {
                   calcButton('AC', Colors.grey, Colors.black),
                   calcButton('+/-', Colors.grey, Colors.black),
                   calcButton('%', Colors.grey, Colors.black),
-                  calcButton('/', Colors.grey, Colors.black),
+                  calcButton('/', Colors.amber[600], Colors.white),
                 ],
               ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 //here button functionality is called where we pass some arguments
-                calcButton('AC', Colors.grey, Colors.black),
-                calcButton('+/-', Colors.grey, Colors.black),
-                calcButton('%', Colors.grey, Colors.black),
-                calcButton('/', Colors.grey, Colors.black),
+                calcButton('7', Colors.grey[800], Colors.white),
+                calcButton('8', Colors.grey[800], Colors.white),
+                calcButton('9', Colors.grey[800], Colors.white),
+                calcButton('x', Colors.amber[600], Colors.white),
               ],
             ),
-            SizedBox(height: 10),Row(
+            const SizedBox(height: 10),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 //here button functionality is called where we pass some arguments
-                calcButton('AC', Colors.grey, Colors.black),
-                calcButton('+/-', Colors.grey, Colors.black),
-                calcButton('%', Colors.grey, Colors.black),
-                calcButton('/', Colors.grey, Colors.black),
+                calcButton('4', Colors.grey[800], Colors.white),
+                calcButton('5', Colors.grey[800], Colors.white),
+                calcButton('6', Colors.grey[800], Colors.white),
+                calcButton('-', Colors.amber[600], Colors.white),
               ],
             ),
-            SizedBox(height: 10),Row(
+            const SizedBox(height: 10),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 //here button functionality is called where we pass some arguments
-                calcButton('AC', Colors.grey, Colors.black),
-                calcButton('+/-', Colors.grey, Colors.black),
-                calcButton('%', Colors.grey, Colors.black),
-                calcButton('/', Colors.grey, Colors.black),
+                calcButton('1', Colors.grey[800], Colors.white),
+                calcButton('2', Colors.grey[800], Colors.white),
+                calcButton('3', Colors.grey[800], Colors.white),
+                calcButton('+', Colors.amber[600], Colors.white),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                //here button functionality is called where we pass some arguments
+                ElevatedButton(
+                  onPressed: () {
+
+                  },
+                  child: const Text("0",
+                    style: TextStyle(
+                      fontSize: 35,
+                      color: Colors.white,
+                    ),
+                  ),
+                  //all this styling is new from tutorial followed
+                  style: ElevatedButton.styleFrom(
+                    shape : const StadiumBorder(),
+                    primary: Colors.grey[800],
+                    padding: const EdgeInsets.fromLTRB(28, 20, 128, 20),
+                  ),
+                ),
+                calcButton('.', Colors.grey[800], Colors.white),
+                calcButton('=', Colors.amber[600], Colors.white),
+              ],
+            ),
+            const SizedBox(height: 25),
           ],
         ),
       ),
