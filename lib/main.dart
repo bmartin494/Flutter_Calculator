@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+//calculator logic
+dynamic displayText = '0';
+dynamic firstNumber = 0;
+dynamic secondNumber = 0;
+dynamic result = '';
+dynamic finalResult = '';
+dynamic operator = '';
+dynamic previousOperator = '';
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,11 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Calculator Demo',
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: const Calculator(title: 'Flutter Calculator'),
+      home: const Calculator(title: 'Flutter Calculatrise'),
     );
   }
 }
@@ -32,24 +42,22 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State<Calculator> {
   //need to make the buttonColor Color declaration nullable (?) otherwise you cannot use the color shading e.g. [700]
   Widget calcButton(String buttonText, Color? buttonColor, Color textColor) {
-    return Container(
-      child: ElevatedButton(
-        onPressed: () {
-
-        },
-        child: Text(buttonText,
-          style: TextStyle(
-            fontSize: 35,
-            color: textColor,
-          ),
+    return ElevatedButton(
+      onPressed: () {
+        calculation(buttonText);
+      },
+      child: Text(buttonText,
+        style: TextStyle(
+          fontSize: 35,
+          color: textColor,
         ),
-        //all this styling is new from tutorial followed
-        style: ElevatedButton.styleFrom(
-          shape : const CircleBorder(),
-          primary: buttonColor,
-          padding: const EdgeInsets.all(0),
-          minimumSize: const Size(80, 80),
-        ),
+      ),
+      //all this styling is new from tutorial followed
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        primary: buttonColor,
+        padding: const EdgeInsets.all(0),
+        minimumSize: const Size(80, 80),
       ),
     );
   }
@@ -61,7 +69,7 @@ class _CalculatorState extends State<Calculator> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(widget.title,
-        style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       body: Padding(
@@ -71,26 +79,26 @@ class _CalculatorState extends State<Calculator> {
           children: [
             //calculator display
             Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
-                  Padding(padding: EdgeInsets.all(10.0),
-                    child: Text('0',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.white, fontSize: 100),
-                      ),
-                    )
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  //here button functionality is called where we pass some arguments
-                  calcButton('AC', Colors.grey, Colors.black),
-                  calcButton('+/-', Colors.grey, Colors.black),
-                  calcButton('%', Colors.grey, Colors.black),
-                  calcButton('/', Colors.amber[600], Colors.white),
-                ],
-              ),
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(padding: EdgeInsets.all(10.0),
+                  child: Text(displayText,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(color: Colors.white, fontSize: 100),
+                  ),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                //here button functionality is called where we pass some arguments
+                calcButton('AC', Colors.grey, Colors.black),
+                calcButton('+/-', Colors.grey, Colors.black),
+                calcButton('%', Colors.grey, Colors.black),
+                calcButton('/', Colors.amber[600], Colors.white),
+              ],
+            ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -141,7 +149,7 @@ class _CalculatorState extends State<Calculator> {
                   ),
                   //all this styling is new from tutorial followed
                   style: ElevatedButton.styleFrom(
-                    shape : const StadiumBorder(),
+                    shape: const StadiumBorder(),
                     primary: Colors.grey[800],
                     padding: const EdgeInsets.fromLTRB(28, 20, 128, 20),
                   ),
@@ -156,4 +164,107 @@ class _CalculatorState extends State<Calculator> {
       ),
     );
   }
+
+  void calculation(buttonText) {
+    if (buttonText == 'AC') {
+      displayText = '0';
+      firstNumber = 0;
+      secondNumber = 0;
+      result = '';
+      finalResult = '0';
+      operator = '';
+      previousOperator = '';
+    }
+    else if (operator == '=' && buttonText == '=') {
+      if (previousOperator == '+') {
+        finalResult = add();
+      }
+      else if (previousOperator == '-') {
+        finalResult = subtract();
+      }
+      else if (previousOperator == 'x') {
+        finalResult = multiply();
+      }
+      else if (previousOperator == '/') {
+        finalResult = divide();
+      }
+    }
+    else if (buttonText == '+' || buttonText == '-' || buttonText == 'x' || buttonText == '/' || buttonText == '=') {
+      if (firstNumber == 0) {
+        firstNumber = double.parse(result);
+      }
+      else {
+        secondNumber = double.parse(result);
+      }
+
+      if (operator == '+') {
+        finalResult = add();
+      } else if( operator == '-') {
+        finalResult = subtract();
+      } else if( operator == 'x') {
+        finalResult = multiply();
+      } else if( operator == '/') {
+        finalResult = divide();
+      }
+      previousOperator = operator;
+      operator = buttonText;
+      result = '';
+    }
+
+    else if(buttonText == '%') {
+      result = firstNumber / 100;
+      finalResult = doesContainDecimal(result);
+    } else if(buttonText == '.') {
+      if(!result.toString().contains('.')) {
+        result = result.toString()+'.';
+      }
+      finalResult = result;
+    }
+    else if(buttonText == '+/-') {
+      result.toString().startsWith('-') ? result = result.toString().substring(1): result = '-'+result.toString();
+      finalResult = result;
+    }
+    else {
+      result = result + buttonText;
+      finalResult = result;
+    }
+    setState(() {
+      displayText = finalResult;
+    });
+  }
 }
+
+String add() {
+  result = (firstNumber + secondNumber).toString();
+  firstNumber = double.parse(result);
+  return doesContainDecimal(result);
+}
+String subtract() {
+  result = (firstNumber - secondNumber).toString();
+  firstNumber = double.parse(result);
+  return doesContainDecimal(result);
+}
+String multiply() {
+  result = (firstNumber * secondNumber).toString();
+  firstNumber = double.parse(result);
+  return doesContainDecimal(result);
+}
+String divide() {
+  result = (firstNumber / secondNumber).toString();
+  firstNumber = double.parse(result);
+  return doesContainDecimal(result);
+}
+
+String doesContainDecimal(dynamic result) {
+
+  if(result.toString().contains('.')) {
+    List<String> splitDecimal = result.toString().split('.');
+
+    if (!(int.parse(splitDecimal[1]) > 0)) {
+      return result = splitDecimal[0].toString();
+    }
+  }
+  return result;
+}
+
+
